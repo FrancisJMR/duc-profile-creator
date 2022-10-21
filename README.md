@@ -1,5 +1,5 @@
 # DUC Profile Creator App
-A Streamlit app that lets users create a Digital User Conditions (DUC) profile JSON file.
+A Streamlit app that lets users create a Digital Use Conditions (DUC) profile JSON file.
 
 For more information about DUC please visit: https://github.com/Digital-Use-Conditions/
 
