@@ -51,9 +51,9 @@ if st.checkbox('Check to see optional fields'):
     if st.checkbox('Add a profile version (ex: 1.0.0)'):
         profileVersion = st.text_input('Profile Version', key="profileVersion")
     if st.checkbox('Add a creation date'):
-        creationDate = st.date_input('Creation date', str(datetime.datetime.now()))
+        creationDate = st.date_input('Creation date', datetime.datetime.now())
     if st.checkbox('Add an update date'):
-        updateDate = st.date_input('Last updated', str(datetime.datetime.now()))
+        updateDate = st.date_input('Last updated', datetime.datetime.now())
     if st.checkbox('Add permission mode'):
         permissionMode = st.selectbox('Permission Mode', ('All unstated conditions are Forbidden', 'All unstated conditions are Permitted'), key='permissionMode')
     if st.checkbox('Add language'):
@@ -120,8 +120,8 @@ def convert_df():
     if profileName: json_doc.update({"profileName": profileName})
     if profileID: json_doc.update({"profileID": profileID})
     if profileVersion: json_doc.update({"profileVersion": profileVersion})
-    if creationDate: json_doc.update({"creationDate": creationDate})
-    if updateDate: json_doc.update({"lastUpdated": updateDate})
+    if creationDate: json_doc.update({"creationDate": str(creationDate)})
+    if updateDate: json_doc.update({"lastUpdated": str(updateDate)})
     if assetName: json_doc.update({"assetName": assetName})
     if assetDescription: json_doc.update({"assetDescription": assetDescription})
     if assetURI: json_doc.update({"assetURI": assetURI})
