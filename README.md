@@ -5,8 +5,9 @@ For more information about DUC please visit: https://github.com/Digital-Use-Cond
 
 ## Development
 On local host:
-docker build -t duc-streamlit-app:latest .
-docker run -p 8501:8501 duc-streamlit-app:latest
+> docker build -t duc-streamlit-app:latest .
+
+> docker run -p 8501:8501 duc-streamlit-app:latest
 
 
 ## Deploy on Azure via CLI
