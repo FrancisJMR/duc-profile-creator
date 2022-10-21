@@ -152,8 +152,8 @@ st.download_button(
     key='download-json'
 )
 
+st.caption('Source code available here: https://github.com/FrancisJMR/duc-profile-creator')
 st.caption('For questions or support please contact fjeanson@yahoo.com')
-
 # TODO: let users upload a DUC profile JSON to enable UI based editing.
 # uploaded_file = st.file_uploader("Load an existing DUC JSON profile file (.json)")
 # if uploaded_file is not None:
