@@ -5,22 +5,26 @@ For more information about DUC please visit: https://github.com/Digital-Use-Cond
 
 ## Development
 On local host:
-> docker build -t duc-streamlit-app:latest .
+> docker build -t duc-streamlit:latest .
 
-> docker run -p 8501:8501 duc-streamlit-app:latest
+> docker run -p 8501:8501 duc-streamlit:latest
 
 
 ## Deploy on Azure via CLI
 Guide: https://towardsdatascience.com/deploying-a-streamlit-web-app-with-azure-app-service-1f09a2159743
 
-Create Azure Contrainer Registry (ACR)
-> az acr create --name MyAppRegistry --resource-group My-Apps-Resource-Group --sku basic --admin-enabled true
+### Create Azure Registry and App Service Plan
+1. Create Azure Contrainer Registry (ACR)
+> az acr create --name MyContainerRegistry --resource-group Data-Analytics-Resource-Group --sku basic --admin-enabled true
 
-Build container image on ACR
-> az acr build --registry MyAppRegistry --image duc-profile-creator-app .
+2. Create Azure App Service Plan
+> az appservice plan create -g Data-Analytics-Resource-Group -n MyAppServicePlan -l canadacentral --is-linux --sku F1
 
-Create Azure App Service Plan
-> az appservice plan create -g My-Apps-Resource-Group -n MyAppServicePlan -l canadacentral --is-linux --sku F1
 
-Deploy to Azure App Service
-> az webapp create -p MyAppServicePlan -n duc-profile-creator-app duc-profile-creator-app:latest
+### Build container image on registry and deploy app on service plan
+1. Build container image on registry
+> az acr build --registry MyContainerRegistry --image duc-streamlit .
+
+2. Deploy to Azure Service Apps
+
+> az webapp create -p MyAppServicePlan -g Data-Analytics-Resource-Group -n duc-streamlit -i MyContainerRegistry.azurecr.io/duc-streamlit:latest
