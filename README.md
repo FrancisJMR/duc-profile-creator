@@ -3,6 +3,10 @@ A Streamlit app that lets users create a Digital Use Conditions (DUC) profile JS
 
 For more information about DUC please visit: https://github.com/Digital-Use-Conditions/
 
+## Demo
+
+A demo of the app is available here: https://duc-profile-creator.azurewebsites.net/ (please wait several minutes for this free web service to boot)
+
 ## Development
 On local host:
 > docker build -t duc-streamlit:latest .
