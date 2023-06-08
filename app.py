@@ -70,15 +70,15 @@ conditionTermLabel = st.text_input('Condition Term Label (ex: Disease specific r
 conditionTermURI = None
 if st.checkbox('Add Condition Term URI'):
     conditionTermURI = st.text_input('Condition Term URI (ex: http://purl.obolibrary.org/obo/DUO_0000007)', key='conditionTermURI')
-conditionDetailLabel = None
-conditionDetailURI = None
-conditionDetailValue = None
-if st.checkbox('Add Condition Detail'):
-    conditionDetailLabel = st.text_input('Condition Detail Label (ex: Month)', key='conditionDetailLabel')
-    if st.checkbox('Add Condition Detail URI'):
-        conditionDetailURI = st.text_input('Condition Detail URI (ex: http://purl.obolibrary.org/obo/UO_0000035)', key='conditionDetailURI')
-    if st.checkbox('Add Condition Detail Value'):
-        conditionDetailValue = st.text_input('Condition Detail Value (ex: 12)', key='conditionDetailValue')
+conditionParameterLabel = None
+conditionParameterURI = None
+conditionParameterValue = None
+if st.checkbox('Add Condition Parameter'):
+    conditionParameterLabel = st.text_input('Condition Parameter Label (ex: Month)', key='conditionParameterLabel')
+    if st.checkbox('Add Condition Parameter URI'):
+        conditionParameterURI = st.text_input('Condition Parameter URI (ex: http://purl.obolibrary.org/obo/UO_0000035)', key='conditionParameterURI')
+    if st.checkbox('Add Condition Parameter Value'):
+        conditionParameterValue = st.text_input('Condition Parameter Value (ex: 12)', key='conditionParameterValue')
 # conditionRule = st.selectbox('Rule', ('No Requirement', 'Obligatory', 'Permitted', 'Forbidden'), key='rule')
 conditionRule = st.select_slider('Select rule to apply', options=['No Requirement', 'Obligatory', 'Permitted', 'Forbidden'])
 # conditionScope = st.selectbox('Scope', ('Whole of asset', 'Part of asset'), key='scope')
@@ -86,18 +86,19 @@ conditionScope = st.select_slider('Select scope', options=['Whole of asset', 'Pa
 
 # Initiatlize df_conditions data frame and prevent override by events such as button press
 if "df_conditions" not in st.session_state:
-    st.session_state['df_conditions'] = pd.DataFrame(columns=['conditionTermLabel','conditionTermURI', 'conditionDetailLabel', 'conditionDetailURI', 'conditionDetailValue', 'conditionRule', 'conditionScope' ])
+    st.session_state['df_conditions'] = pd.DataFrame(columns=['conditionTermLabel','conditionTermURI', 'conditionParameterLabel', 'conditionParameterURI', 'conditionParameterValue', 'conditionRule', 'conditionScope' ])
 
 if st.button('Add this condition to the DUC profile'):
+    # Build the JSON dict object
     condition = {}
     if conditionTermLabel == '':
         st.error('There\'s a missing Condition Term Label. At least one condition must be defined.', icon="🚨")
     else:
         condition.update({'conditionTermLabel': conditionTermLabel})
         condition.update({'conditionTermURI': conditionTermURI})
-        condition.update({'conditionDetailLabel': conditionDetailLabel})
-        condition.update({'conditionDetailURI': conditionDetailURI})
-        condition.update({'conditionDetailValue': conditionDetailValue})
+        condition.update({'conditionParameterLabel': conditionParameterLabel})
+        condition.update({'conditionParameterURI': conditionParameterURI})
+        condition.update({'conditionParameterValue': conditionParameterValue})
         condition.update({'conditionRule': conditionRule})
         condition.update({'conditionScope': conditionScope})
         condition_df = pd.DataFrame(condition, index=[0])
@@ -110,10 +111,14 @@ st.table(st.session_state.df_conditions)
 
 if st.button('Clear list of conditions (press twice)'):
     del st.session_state['df_conditions']
-    st.session_state.df_conditions = pd.DataFrame(columns=['conditionTermLabel','conditionTermURI', 'conditionDetailLabel', 'conditionDetailURI', 'conditionDetailValue', 'conditionRule', 'conditionScope' ])
+    st.session_state.df_conditions = pd.DataFrame(columns=['conditionTermLabel','conditionTermURI', 'conditionParameterLabel', 'conditionParameterURI', 'conditionParameterValue', 'conditionRule', 'conditionScope' ])
 
 st.write('## Export DUC Profile')
 def convert_df():
+    '''
+    Convert session df_conditions table into JSON that match DUC specs
+    https://github.com/Digital-Use-Conditions/duc-schema/blob/main/duc-schema.json
+    '''
     json_doc = dict()
     json_doc.update({"$schema": "https://json-schema.org/draft/2020-12/schema"})
     json_doc.update({"$id": "https://github.com/Digital-Use-Conditions/duc-schema/blob/main/duc-schema.json"})
@@ -132,13 +137,15 @@ def convert_df():
     conditions_lst = []
     for index, row in st.session_state['df_conditions'].iterrows():
         condition_doc = dict()
-        condition_doc.update({"conditionTermLabel": row['conditionTermLabel']})
-        if row['conditionTermURI']: condition_doc.update({"conditionTermURI": row['conditionTermURI']})
-        if row['conditionDetailLabel']: condition_doc.update({"conditionDetailLabel": row['conditionDetailLabel']})
-        if row['conditionDetailURI']: condition_doc.update({"conditionDetailURI": row['conditionDetailURI']})
-        if row['conditionDetailValue']: condition_doc.update({"conditionDetailValue": row['conditionDetailValue']})
-        if row['conditionRule']: condition_doc.update({"rule": row['conditionRule']})
-        if row['conditionScope']: condition_doc.update({"scope": row['conditionScope']})
+        condition_doc.update({'conditionTerm': {}})
+        condition_doc['conditionTerm'].update({'label': row['conditionTermLabel']})
+        if row['conditionTermURI']: condition_doc['conditionTerm'].update({'uri': row['conditionTermURI']})
+        if row['conditionParameterLabel']: condition_doc.update({'conditionParameter': {}})
+        if row['conditionParameterLabel']: condition_doc['conditionParameter'].update({'label': row['conditionParameterLabel']})
+        if row['conditionParameterURI']: condition_doc['conditionParameter'].update({'uri': row['conditionParameterURI']})
+        if row['conditionParameterValue']: condition_doc['conditionParameter'].update({'value': row['conditionParameterValue']})
+        if row['conditionRule']: condition_doc.update({'conditionRule': row['conditionRule']})
+        if row['conditionScope']: condition_doc.update({'conditionScope': row['conditionScope']})
         if len(condition_doc) > 0: conditions_lst.append(condition_doc)
 
     json_doc.update({'conditions': conditions_lst})
